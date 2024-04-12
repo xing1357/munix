@@ -21,10 +21,13 @@ void screen_clear()
 
 void screen_scroll()
 {
+    // Clear the top line
+    memset(g_vga_buffer, 0, 80);
+
     // Move each line up
-    for(int i = 0; i < (VGA_HEIGHT - 1) * VGA_WIDTH; i++)
+    for(int i = 80; i < (VGA_HEIGHT) * VGA_WIDTH; i++)
     {
-        g_vga_buffer[i] = g_vga_buffer[i + 80];
+        g_vga_buffer[i - 80] = g_vga_buffer[i];
     }
 }
 
@@ -41,7 +44,7 @@ void screen_put_char(char c)
     if(cursor_y > 25)
     {
         screen_scroll();
-        cursor_y = 25;
+        cursor_y = 24;
     }
 
     if(c == '\n')
@@ -63,6 +66,64 @@ void screen_put_string(char* s)
     for(int i = 0; i < len; i++)
     {
         screen_put_char(s[i]);
+    }
+}
+
+void printf(const char *format, ...)
+{
+    char **arg = (char **)&format;
+    int c;
+    char buf[32];
+
+    arg++;
+
+    memset(buf, 0, sizeof(buf));
+    while ((c = *format++) != 0) {
+        if (c != '%')
+            screen_put_char(c);
+        else {
+            char *p, *p2;
+            int pad0 = 0, pad = 0;
+
+            c = *format++;
+            if (c == '0') {
+                pad0 = 1;
+                c = *format++;
+            }
+
+            if (c >= '0' && c <= '9') {
+                pad = c - '0';
+                c = *format++;
+            }
+
+            switch (c) {
+                case 'd':
+                case 'u':
+                case 'x':
+                    itoa(buf, c, *((int *)arg++));
+                    p = buf;
+                    goto string;
+                    break;
+
+                case 's':
+                    p = *arg++;
+                    if (!p)
+                        p = "(null)";
+
+                string:
+                for (p2 = p; *p2; p2++)
+                    ;
+                for (; p2 < p + pad; p2++)
+                    screen_put_char(pad0 ? '0' : ' ');
+                while (*p)
+                    screen_put_char(*p++);
+                break;
+
+                default:
+                    screen_put_char(*((int *)arg++));
+                    break;
+            }
+        }
     }
 }
 

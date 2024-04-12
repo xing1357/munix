@@ -1,24 +1,27 @@
 #include "string.h"
 
-void memcpy(uint8_t* src, uint8_t* dest, int len)
+void memcpy(void* src, void* dest, uint32_t len)
 {
-    for(int i = 0; i < len; i++)
+    uint8_t* tmp1 = src;
+    uint8_t* tmp2 = dest;
+    for(uint32_t i = 0; i < len; i++)
     {
-        src[i] = dest[i];
+        tmp1[i] = tmp2[i];
     }
 }
 
-void memset(uint8_t* src, uint8_t data, int len)
+void memset(void* src, uint8_t data, uint32_t len)
 {
-    for(int i = 0; i < len; i++)
+    uint8_t* tmp = src;
+    for(uint32_t i = 0; i < len; i++)
     {
-        src[i] = data;
+        tmp[i] = data;
     }
 }
 
-void strcpy(char* src, char* dest, int len)
+void strcpy(char* src, char* dest, uint32_t len)
 {
-    for(int i = 0; i < len; i++)
+    for(uint32_t i = 0; i < len; i++)
     {
         src[i] = dest[i];
     }
@@ -45,4 +48,39 @@ int strlen(const char* s)
     }
 
     return i;
+}
+
+void itoa(char *buf, int base, int d) {
+    char *p = buf;
+    char *p1, *p2;
+    unsigned long ud = d;
+    int divisor = 10;
+
+    /* If %d is specified and D is minus, put ‘-’ in the head. */
+    if (base == 'd' && d < 0) {
+        *p++ = '-';
+        buf++;
+        ud = -d;
+    } else if (base == 'x')
+        divisor = 16;
+
+    /* Divide UD by DIVISOR until UD == 0. */
+    do {
+        int remainder = ud % divisor;
+        *p++ = (remainder < 10) ? remainder + '0' : remainder + 'a' - 10;
+    } while (ud /= divisor);
+
+    /* Terminate BUF. */
+    *p = 0;
+
+    /* Reverse BUF. */
+    p1 = buf;
+    p2 = p - 1;
+    while (p1 < p2) {
+        char tmp = *p1;
+        *p1 = *p2;
+        *p2 = tmp;
+        p1++;
+        p2--;
+    }
 }
