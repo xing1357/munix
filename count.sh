@@ -1,2 +1,2 @@
 #!/bin/sh
-find . -name '*.c' | xargs wc -l
+find . -type f -execdir cat {} \; | wc -l

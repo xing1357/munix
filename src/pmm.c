@@ -2,6 +2,7 @@
 #include "screen.h"
 #include "string.h"
 #include "kernel.h"
+#include "panic.h"
 
 uint8_t* bitmap = (uint8_t*)(&__kernel_section_end);
 uint32_t bitmap_size = 0;
@@ -21,7 +22,7 @@ void pmm_init(uint32_t mem_size)
     printf("\nTotal Physical Memory: %d mb", mem_size / (1024 * 1024));
     printf("\nBitmap Size: %d", bitmap_size);
     printf("\nNumber of Physical Frames: %d", total_frames);
-    printf("\nStart of Usable Physical Memory: 0x%x", mem_start); // 90% sure thats wrong but whatever
+    printf("\nStart of Usable Physical Memory: 0x%x", mem_start);
 }
 
 
@@ -33,7 +34,7 @@ uint32_t get_first_free_frame()
             return i;
     }
 
-    printf("Damn no free frames. Womp Womp :(");
+    PANIC("Damn no free frames. Womp Womp :(");
     return -1;
 }
 
