@@ -1,6 +1,6 @@
-CC = /usr/local/bin/i386-elf-gcc
-LD = /usr/local/bin/i386-elf-ld
-ASM = /usr/local/bin/nasm
+CC = gcc
+LD = ld
+ASM = nasm
 
 INC = ./include
 INCLUDE=-I$(INC)
@@ -32,10 +32,10 @@ $(BINARY): ${OBJ}
 	 $(ASM) $(ASFLAGS) $< -o $@
 
 run: all
-	/usr/local/bin/qemu-system-i386 -kernel $(BINARY)
+	qemu-system-i386 -kernel $(BINARY)
 
 drun: all
-	/usr/local/bin/qemu-system-i386 -s -S -kernel $(BINARY)
+	qemu-system-i386 -s -S -kernel $(BINARY)
 
 clean:
 	rm -f src/*.o src/asm/*.o $(BINARY)

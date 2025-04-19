@@ -1,48 +1,44 @@
-ENTRY(_start)
-
+OUTPUT_FORMAT("elf32-i386")
+ENTRY(low_kernel_entry)
 SECTIONS
 {
-    __kernel_section_start = .;
-    /* text section */
-    .text 0x0100000 : {
-        __kernel_text_section_start = .;
-        . = ALIGN(4);
-        /* set multiboot header */
-        LONG(0x1BADB002)
-        LONG(0x00000003)
-        LONG(0xE4524FFB)
-        code = .; _code = .; __code = .;
+    /*Kernel binary starts at 3GB. This is VMA, virtual memory address, so now all the variable, code label is going to be reference based on this VMA
+     * 
+     * */
+    . = 0xC0100000;
+    /*
+        *(.section name) means: all sections named "section name" in all input object files, please put them here
+        multiboot is a section defined in entry.asm, it contains information for grub to find where our kernel entry point is
+
+       use keyword AT to relocate text section, same for rodata, data and bss section
+    */
+    .text ALIGN(4K) : AT(ADDR(.text)-0xC0000000)
+    {
+        *(.multiboot)
         *(.text)
+    }
+    .rodata ALIGN (4K) : AT(ADDR(.rodata)-0xC0000000)
+    {
         *(.rodata)
-        . = ALIGN(4096);
-        __kernel_text_section_end = .;
     }
-
-    /* initialized data section */
-    .data : {
-        __kernel_data_section_start = .;
-        data = .; _data = .; __data = .;
-        *(.data)
-        . = ALIGN(4096);
-        __kernel_data_section_end = .;
-    }
-
-    /* constant data section */
-    .rodata : {
-        __kernel_rodata_section_start = .;
-        *(.rodata)
-        __kernel_rodata_section_end = .;
-    }
-
-    /* un-initialized data section */
-    .bss : {
-        __kernel_bss_section_start = .;
-        bss = .; _bss = .; __bss = .;
+     /*
+        .bss is also data section, but it contains uninitialized data
+        .common is also uninitialized data section
+        .initial_stack is a section defined in entry.asm, as an initial stack for our kernel
+    */
+    .bss ALIGN(4K) : AT(ADDR(.bss)-0xC0000000)
+    {
+        *(.COMMON)
         *(.bss)
-        . = ALIGN(4096);
-        __kernel_bss_section_end = .;
+        *(.initial_stack)
+    }
+    .data ALIGN(4K) : AT(ADDR(.data)-0xC0000000)
+    {
+        *(.data)
     }
 
-    end = .; _end = .; __end = .;
-    __kernel_section_end = .;
+    /*
+        Put a symbol end here, it tells us where all the kernel code/data ends, it means everything after 'end' can be used for something else
+    */
+    end = .;
 }

@@ -1,11 +1,14 @@
 #include "screen.h"
 #include "vga.h"
 #include "string.h"
+#include "kernel.h"
 
 int cursor_x = 0, cursor_y = 0;
 
 uint16_t* g_vga_buffer;
 uint8_t g_fore_color = WHITE, g_back_color = BLACK;
+
+#define SCREEN (uint16_t*)(LOAD_MEMORY_ADDRESS + 0xB8000)
 
 void screen_clear()
 {
@@ -130,7 +133,7 @@ void printf(const char *format, ...)
 void screen_init(uint8_t fore_color, uint8_t back_color)
 {
     vga_disable_cursor();
-    g_vga_buffer = (uint16_t*)0xB8000;
+    g_vga_buffer = (uint16_t*)SCREEN;
     g_fore_color = fore_color;
     g_back_color = back_color;
 

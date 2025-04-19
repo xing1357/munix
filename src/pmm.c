@@ -4,13 +4,12 @@
 #include "kernel.h"
 #include "panic.h"
 
-uint8_t* bitmap = (uint8_t*)(&__kernel_section_end);
+uint8_t* bitmap = (uint8_t*)(&end);
 uint32_t bitmap_size = 0;
 uint8_t* mem_start = 0; // Start of physical memory
 uint32_t total_frames = 0;
 
-void pmm_init(uint32_t mem_size)
-{
+void pmm_init(uint32_t mem_size) {
     total_frames = mem_size / FRAME_SIZE;
 
     bitmap_size = total_frames / 8;
@@ -26,10 +25,8 @@ void pmm_init(uint32_t mem_size)
 }
 
 
-uint32_t get_first_free_frame()
-{
-    for(uint32_t i = 0; i < total_frames; i++)
-    {
+uint32_t get_first_free_frame() {
+    for(uint32_t i = 0; i < total_frames; i++) {
         if(!ISSET(i))
             return i;
     }
@@ -38,20 +35,17 @@ uint32_t get_first_free_frame()
     return -1;
 }
 
-uint32_t pmm_alloc_frame()
-{
+uint32_t pmm_alloc_frame() {
     uint32_t frame_idx = get_first_free_frame();
     SET_BIT(frame_idx);
     return frame_idx;
 }
 
-void pmm_free_frame(int idx)
-{
+void pmm_free_frame(int idx) {
     CLEAR_BIT(idx);
 }
 
-void pmm_test()
-{
+void pmm_test() {
     int t1 = pmm_alloc_frame();
     printf("\nFirst free frame at %d", t1);
 

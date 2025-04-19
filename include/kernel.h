@@ -3,16 +3,12 @@
 
 #include "types.h"
 
+#define LOAD_MEMORY_ADDRESS 0xC0000000
+#define K 1024
+#define M (1024*K)
+#define G (1024*M)
+
 // symbols from linker.ld for section addresses
-extern uint8_t __kernel_section_start;
-extern uint8_t __kernel_section_end;
-extern uint8_t __kernel_text_section_start;
-extern uint8_t __kernel_text_section_end;
-extern uint8_t __kernel_data_section_start;
-extern uint8_t __kernel_data_section_end;
-extern uint8_t __kernel_rodata_section_start;
-extern uint8_t __kernel_rodata_section_end;
-extern uint8_t __kernel_bss_section_start;
-extern uint8_t __kernel_bss_section_end;
+extern uint32_t end;
 
 #endif
